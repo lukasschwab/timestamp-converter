@@ -26,8 +26,8 @@
         </div>
         <input id="input" class="form-control" type="number" aria-label="Timestamp" aria-describedby="basic-addon1">
       </div>
-      <p id="error" class="alert alert-danger">Timestamp is not valid. <a id="reset-to-now" class="alert-link" href="#">Reset to the current timestamp.</a></p>
-      <p id="warning" class="alert alert-info">Interpreting as seconds.</p>
+      <p id="error" class="alert alert-danger" style="display: none;">Timestamp is not valid. <a id="reset-to-now" class="alert-link" href="#">Reset to the current timestamp.</a></p>
+      <p id="warning" class="alert alert-info" style="display: none;">Interpreting as seconds.</p>
       <div id="clickable">
         <ul class="list-group">
           <li id="output" class="list-group-item list-group-item-action list-group-item-primary" href="#"/>
@@ -48,71 +48,4 @@
     </div>
   </div>
 </body>
-
-<script type="text/javascript">
-  <!-- Date helpers. -->
-  const warning = document.getElementById('warning');
-  const error = document.getElementById('error');
-
-  const getDateFromString = (s) => {
-    let ms;
-    if (s.length === 10) {
-      // Seconds.
-      ms = 1000 * parseInt(s);
-      warning.style.display = "block";
-    } else {
-      // Milliseconds.
-      ms = parseInt(s);
-      warning.style.display = "none";
-    }
-    const nextDate = new Date(ms);
-    if (isNaN(nextDate.getTime())) {
-      error.style.display = "block";
-    } else {
-      error.style.display = "none";
-    }
-    return nextDate;
-  }
-
-  <!-- Initialize form with listeners. -->
-  const input = document.getElementById('input');
-  input.value = new Date().getTime()
-
-  const output = document.getElementById('output');
-  const setOutput = () => {
-    const date = getDateFromString(input.value);
-    output.innerHTML = date;
-    document.getElementById('code-output').innerHTML = `new Date(${date.getTime()})`
-    document.getElementById('readable').innerHTML = date.toLocaleDateString(
-      'en-US',
-      {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric'
-      }
-    );
-    document.getElementById('iso').innerHTML = date.toISOString();
-  }
-  setOutput()
-
-  input.addEventListener('input', (event) => setOutput())
-
-  document.getElementById('reset-to-now').addEventListener("click", () => {
-    input.value = new Date().getTime();
-    setOutput();
-  })
-
-  <!-- Click handling. -->
-  document.getElementsByTagName('html')[0].onclick = () => {
-    input.select();
-  };
-  document.getElementById('clickable').onclick = (event) => {
-    event = event ? event : window.event;
-    if (event.stopPropagation) {
-      event.stopPropagation();
-    } else {
-      evt.cancelBubble=true;
-    }
-    return false;
-  }
-</script>
+<script src="./script.js"></script>
