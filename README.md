@@ -1,4 +1,4 @@
-# timestamp-Converter
+# timestamp-converter
 
 Some simple Unix timestamp utilities.
 
