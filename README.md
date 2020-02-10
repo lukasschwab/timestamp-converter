@@ -17,7 +17,7 @@ To add this search engine to Chrome, visit `chrome://settings/searchEngines`.
     + **Query URL:** `https://lukasschwab.me/timestamp-converter/search.html?%s` <br><br>
     ![A screenshot of the search configuration described above.](./img/search-config.png)
 
-2. Click `Save`.
+2. Click `Add`.
 
 After following these steps, you should be able to type `ts` in the omnibox, hit `Tab`, and then input a timestamp.
 
