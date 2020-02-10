@@ -22,17 +22,16 @@
       </p>
       <div class="input-group mb-3">
         <div class="input-group-prepend">
-          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Unix Time</button>
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mongo ID</button>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="./mongo.html">Mongo ID</a>
+            <a class="dropdown-item" href="./index.html">Unix Time</a>
           </div>
         </div>
-        <input id="input" class="form-control" type="number" aria-label="Timestamp" aria-describedby="basic-addon1">
+        <input id="input" class="form-control" type="text" aria-label="Timestamp" aria-describedby="basic-addon1">
       </div>
-      <p id="error" class="alert alert-danger" style="display: none;">Timestamp is not valid. <a id="reset-to-now" class="alert-link" href="#">Reset to the current timestamp.</a></p>
-      <p id="warning" class="alert alert-info" style="display: none;">Interpreting as seconds.</p>
+      <p id="error" class="alert alert-danger" style="display: none;">ID does not encode a valid timestamp. <a id="reset-to-now" class="alert-link" href="#">Reset to a Mongo ID encoding the current timetamp.</a></p>
       <div id="clickable">
-        <ul class="list-group">
+        <ul class="list-group mb-3">
           <li id="output" class="list-group-item list-group-item-action list-group-item-primary" href="#"/>
           <li class="list-group-item list-group-item-action" href="#">
             <label class="list-group-item-label quiet">Readable</label>
@@ -51,5 +50,5 @@
     </div>
   </div>
 </body>
-<script src="./unix.js"></script>
+<script src="./mongo.js"></script>
 <script src="./generic.js"></script>

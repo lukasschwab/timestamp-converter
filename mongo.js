@@ -1,18 +1,13 @@
 // Timestamp interpretation utilities.
-const warning = document.getElementById('warning');
 const error = document.getElementById('error');
 
 const getDateFromInput = (s) => {
   let ms;
-  if (s.length === 10) {
-    // Treat as seconds.
-    ms = 1000 * parseInt(s);
-    warning.style.display = "block";
-  } else {
-    ms = parseInt(s);
-    warning.style.display = "none";
-  }
+  console.log("s", s)
+  ms = parseInt(s.substring(0, 8), 16) * 1000;
+  console.log("ms", ms)
   const nextDate = new Date(ms);
+  console.log("nextDate", nextDate)
   if (isNaN(nextDate.getTime())) {
     error.style.display = "block";
   } else {
@@ -30,6 +25,7 @@ const codeOutput = document.getElementById('code-output');
 
 const setOutputs = () => {
   const date = getDateFromInput(input.value);
+  console.log(date)
   mainOutput.innerHTML = date;
   codeOutput.innerHTML = `new Date(${date.getTime()})`
   readableOutput.innerHTML = date.toLocaleDateString(
@@ -43,8 +39,14 @@ const setOutputs = () => {
   isoOutput.innerHTML = date.toISOString();
 }
 
+const dateToMongoId = (date) => {
+  const ms = date.getTime();
+  const prefix = Math.floor(ms / 1000).toString(16);
+  return prefix + "0000000000000000";
+}
+
 const reset = () => {
-  input.value = new Date().getTime();
+  input.value = dateToMongoId(new Date());
   setOutputs();
 }
 reset();
