@@ -1,0 +1,55 @@
+<head>
+  <title>Timestamp Converter</title>
+  <!-- favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16.png">
+  <!-- Bootstrap. -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <!-- Custom. -->
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <div id="main" class="container">
+    <div class="col-lg-8">
+      <h1>timestamp converter</h1>
+      <p class="quiet">
+        <a href="http://lukasschwab.me">Lukas Schwab</a> &middot; <a href="http://github.com/lukasschwab/timestamp-converter">timestamp-converter on GitHub</a>
+      </p>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ISO 8601</button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="./index.html">Unix Time</a>
+            <a class="dropdown-item" href="./mongo.html">Mongo ID</a>
+          </div>
+        </div>
+        <input id="input" class="form-control" type="text" aria-label="Timestamp" aria-describedby="basic-addon1">
+      </div>
+      <p id="error" class="alert alert-danger" style="display: none;">Timestamp is not valid. <a id="reset-to-now" class="alert-link" href="#">Reset to the current timestamp.</a></p>
+      <div id="clickable">
+        <ul class="list-group">
+          <li id="output" class="list-group-item list-group-item-action list-group-item-primary" href="#"/>
+          <li class="list-group-item list-group-item-action" href="#">
+            <label class="list-group-item-label quiet">Readable</label>
+            <span id="readable"></span>
+          </li>
+          <li class="list-group-item list-group-item-action" href="#">
+            <label class="list-group-item-label quiet">ISO</label>
+            <span id="iso"></span>
+          </li>
+          <li class="list-group-item list-group-item-action" href="#">
+            <label class="list-group-item-label quiet">JavaScript</label>
+            <code id="code-output"></code>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="./iso.js"></script>
+<script src="./generic.js"></script>
