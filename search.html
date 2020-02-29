@@ -2,18 +2,21 @@
 <script type="text/javascript">
   const queried = window.location.search.substring(1);
   if (queried.length !== 0) {
-    console.log("Query found; switching on query value...")
+    console.log("Query found; switching on query value...");
     if (queried.match(/^\d+$/g)) {
       // Number; probably a unix timestamp.
-      console.log("All digits; redirecting to unix")
+      console.log("All digits; redirecting to unix");
       window.location.assign(`./index.html?${queried}`);
+    } else if (!isNaN((new Date(queried)).getTime())) {
+      console.log("String can be parsed to a valid date; redirecting to iso");
+      window.location.assign(`./iso.html?${queried}`);
     } else {
       // Not a number; probably a Mongo ID.
-      console.log("Not all digits; redirecting to mongo")
+      console.log("Not all digits; redirecting to mongo");
       window.location.assign(`./mongo.html?${queried}`);
     }
   } else {
-    console.log("No query; defaulting to index.")
+    console.log("No query; defaulting to index.");
     window.location.assign(`./index.html`);
   }
 </script>
