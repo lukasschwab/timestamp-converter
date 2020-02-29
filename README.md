@@ -3,6 +3,7 @@
 Some simple timestamp utilities.
 
 + [Unix timestamps](https://lukasschwab.me/timestamp-converter/index.html) (milliseconds and seconds)
++ [ISO 8601 timestamps](https://lukasschwab.me/timestamp-converter/iso.html)
 + [Mongo ID timestamps](https://lukasschwab.me/timestamp-converter/mongo.html)
 
 ## Search
@@ -25,6 +26,7 @@ After following these steps, you should be able to type `ts` in the omnibox, hit
 
 + If the search query is empty, you'll be redirected to the Unix timestamp converter by default.
 + If the search query is all digits, you'll be redirected to the Unix timestamp converter.
++ If the search query can be parsed by the Javascript `new Date()` constructor, you'll be redirected to the ISO timestamp converter.
 + Otherwise, you'll be redirected to the Mongo ID converter.
 
 ## Notes
