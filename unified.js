@@ -8,6 +8,7 @@
  const readableOutput = document.getElementById('readable');
  const isoOutput = document.getElementById('iso');
  const codeOutput = document.getElementById('code-output');
+ const mongoOutput = document.getElementById('mongo-output');
  const resetLink = document.getElementById('reset-to-now')
 
 /**
@@ -130,6 +131,7 @@ const setOutputs = () => {
   codeOutput.innerHTML = toCodeOutput(date);
   readableOutput.innerHTML = toReadableOutput(date);
   isoOutput.innerHTML = toISOOutput(date);
+  mongoOutput.innerHTML = toMongoOutput(date);
 }
 input.addEventListener('input', setOutputs);
 
