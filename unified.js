@@ -25,7 +25,7 @@ const mongoParser = (s) => {
 
 const isoParser = (s) => new Date(s);
 
-const error = document.getElementById('error');
+var error;
 
 const showErrorIfInvalid = (d) => {
   if (isNaN(d.getTime())) {
@@ -85,24 +85,30 @@ const setOutputs = () => {
 
 input.addEventListener('input', setOutputs);
 
-// Clicking the reset link sets to the input to the current timestamp.
-const resetLink = document.getElementById('reset-to-now')
-
 const reset = () => {
   input.value = dateToValidInput(new Date());
   setOutputs();
 }
 
-resetLink.addEventListener("click", reset);
+// Clicking the reset link sets to the input to the current timestamp.
+Array.from(document.getElementsByClassName("reset-to-now")).forEach(
+  link => link.addEventListener("click", reset)
+);
 
 /**
  * SWITCHING UI.
  */
 
 const dropdown = document.getElementById("somedropdown");
+
 const switchToUnixLink = document.getElementById("switch-to-unix");
+const unixError = document.getElementById("unix-error");
+
 const switchToISOLink = document.getElementById("switch-to-iso");
+const isoError = document.getElementById("iso-error");
+
 const switchToMongoLink = document.getElementById("switch-to-mongo");
+const mongoError = document.getElementById("mongo-error");
 
 // (String | Number) => Date
 var inputParser;
@@ -118,6 +124,7 @@ function switchToUnix() {
   switchToUnixLink.classList.add("active");
   switchToISOLink.classList.remove("active");
   switchToMongoLink.classList.remove("active");
+  error = unixError;
 }
 
 switchToUnixLink.addEventListener('click', () => {
@@ -133,6 +140,7 @@ function switchToISO() {
   switchToISOLink.classList.add("active");
   switchToUnixLink.classList.remove("active");
   switchToMongoLink.classList.remove("active");
+  error = isoError;
 }
 
 switchToISOLink.addEventListener('click', () => {
@@ -148,6 +156,7 @@ function switchToMongo() {
   switchToMongoLink.classList.add("active");
   switchToUnixLink.classList.remove("active");
   switchToISOLink.classList.remove("active");
+  error = mongoError;
 }
 
 switchToMongoLink.addEventListener('click', () => {
@@ -159,26 +168,25 @@ switchToMongoLink.addEventListener('click', () => {
  * INITIALIZATION
  */
 
-// Use path to determine which parser/what default input to use.
-const filename = location.pathname.split("/").pop();
-switch (filename) {
-  case "mongo.html":
-    switchToMongo();
-    break;
-  case "iso.html":
-    switchToISO();
-    break;
-  default:
-    switchToUnix();
-}
-
 // If redirected from search.html, start with the searched timestamp rather than
 // the current timestamp.
 const queried = window.location.search.substring(1);
 if (queried && queried.length > 0) {
   console.log("Initializing with query value", queried)
-  input.value = queried
-  setOutputs()
+  if (queried.match(/^\d+$/g)) {
+    console.log("Switching on query to Unix");
+    switchToUnix();
+  } else if (!isNaN((new Date(queried)).getTime())) {
+    console.log("Switching on query to ISO");
+    switchToISO();
+  } else {
+    console.log("Defaulting on query to Mongo");
+    switchToMongo();
+  }
+  input.value = queried;
+  setOutputs();
 } else {
+  // Without a query, default to Unix.
+  switchToUnix();
   reset();
 }

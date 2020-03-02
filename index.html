@@ -31,17 +31,19 @@
         </div>
         <input id="input" class="form-control" type="number" aria-label="Timestamp" aria-describedby="basic-addon1">
       </div>
-      <p id="error" class="alert alert-danger" style="display: none;">Timestamp is not valid. <a id="reset-to-now" class="alert-link" href="#">Reset to the current timestamp.</a></p>
+      <p id="unix-error" class="alert alert-danger" style="display: none;">Timestamp is not valid. <a class="alert-link reset-to-now" href="#">Reset to the current timestamp.</a></p>
+      <p id="iso-error" class="alert alert-danger" style="display: none;">ISO time is not valid. <a class="alert-link reset-to-now" href="#">Reset to the current time.</a></p>
+      <p id="mongo-error" class="alert alert-danger" style="display: none;">ID does not encode a valid timestamp. <a class="alert-link reset-to-now" href="#">Reset to a Mongo ID encoding the current timetamp.</a></p>
       <p id="warning" class="alert alert-info" style="display: none;">Interpreting as seconds.</p>
       <div id="clickable">
         <ul class="list-group">
-          <li id="default-output" class="list-group-item list-group-item-action list-group-item-primary" href="#"/>
+          <li id="default-output" class="list-group-item list-group-item-action list-group-item-primary" href="#">Invalid Date</li>
           <li class="list-group-item list-group-item-action" href="#">
             <label class="list-group-item-label quiet">Readable</label>
             <span id="readable-output"></span>
           </li>
           <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">ISO</label>
+            <label class="list-group-item-label quiet">ISO 8601</label>
             <span id="iso-output"></span>
           </li>
           <li class="list-group-item list-group-item-action" href="#">
