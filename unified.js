@@ -2,19 +2,13 @@
  * SELECT DOM ELEMENTS.
  */
 
- const error = document.getElementById('error');
- const input = document.getElementById('input');
- const mainOutput = document.getElementById('output');
- const readableOutput = document.getElementById('readable');
- const isoOutput = document.getElementById('iso');
- const codeOutput = document.getElementById('code-output');
- const mongoOutput = document.getElementById('mongo-output');
- const resetLink = document.getElementById('reset-to-now')
-
 /**
  * INPUT-TO-DATE UTILS.
  * (String | Number) => Date
  */
+
+// Warning visibility is controlled from the selected parser.
+const warning = document.getElementById('warning');
 
 // (Number) => Date
 const unixParser = (n) => {
@@ -27,77 +21,46 @@ const unixParser = (n) => {
     ms = parseInt(n);
     warning.style.display = "none";
   }
-  const nextDate = new Date(ms);
-  if (isNaN(nextDate.getTime())) {
-    error.style.display = "block";
-  } else {
-    error.style.display = "none";
-  }
-  return nextDate;
+  return new Date(ms);
 }
 
 // (String) => Date
 const mongoParser = (s) => {
-  let ms;
-  ms = parseInt(s.substring(0, 8), 16) * 1000;
-  const nextDate = new Date(ms);
-  if (isNaN(nextDate.getTime())) {
-    error.style.display = "block";
-  } else {
-    error.style.display = "none";
-  }
-  return nextDate;
+  const ms = parseInt(s.substring(0, 8), 16) * 1000;
+  return new Date(ms);
 }
 
 // (String) => Date
-const isoParser = (s) => {
-  const nextDate = new Date(s);
-  if (isNaN(nextDate.getTime())) {
-    error.style.display = "block";
-  } else {
-    error.style.display = "none";
-  }
-  return nextDate;
-}
+const isoParser = (s) => new Date(s);
 
 /**
  * DATE-TO-OUTPUT UTILS.
  * (Date) => string
  */
 
-// Construct a standard handled output generator.
-const handle = (toOutput) => (d) => {
-  try {
-    return toOutput(d);
-  } catch (err) {
-    console.log(err);
-    return "Invalid Date";
-  }
-}
+const toDefaultOutput = (d) => d;
 
-const toDefaultOutput = handle((d) => d);
+const toCodeOutput = (d) => `new Date(${d.getTime()})`;
 
-const toCodeOutput = handle((d) => `new Date(${d.getTime()})`);
-
-const toReadableOutput = handle((d) => d.toLocaleDateString(
+const toReadableOutput = (d) => d.toLocaleDateString(
   'en-US',
   {
     month: 'long',
     day: 'numeric',
     year: 'numeric'
   }
-));
+);
 
-const toISOOutput = handle((d) => d.toISOString());
+const toISOOutput = (d) => d.toISOString();
 
-const toMongoOutput = handle((d) => {
+const toMongoOutput = (d) => {
   const ms = d.getTime();
   const prefix = Math.floor(ms / 1000).toString(16);
   return prefix + "0000000000000000";
-});
+}
 
 /**
- * DEFINE & ADD EVENT LISTENERS.
+ * SELECT LOGIC.
  */
 
 // (String | Number) => Date
@@ -106,7 +69,6 @@ var inputParser;
 var dateToValidInput;
 
 // Use path to determine which parser/what default input to use.
-// Alteratively, could switch on query string...
 const filename = location.pathname.split("/").pop();
 switch (filename) {
   case "mongo.html":
@@ -123,23 +85,42 @@ switch (filename) {
     dateToValidInput = (d) => d.getTime();
 }
 
-// FIXME: define the above!
+/**
+ * ADD EVENT LISTENERS.
+ */
 
+const outputsAndGenerators = new Map([
+  [document.getElementById('default-output'), toDefaultOutput],
+  [document.getElementById('code-output'), toCodeOutput],
+  [document.getElementById('readable-output'), toReadableOutput],
+  [document.getElementById('iso-output'), toISOOutput],
+  [document.getElementById('mongo-output'), toMongoOutput],
+]);
+
+const error = document.getElementById('error');
+const showErrorIfInvalid = (d) => {
+  if (isNaN(d.getTime())) {
+    error.style.display = "block";
+  } else {
+    error.style.display = "none";
+  }
+}
+
+const input = document.getElementById('input');
 const setOutputs = () => {
   const date = inputParser(input.value);
-  mainOutput.innerHTML = toDefaultOutput(date);
-  codeOutput.innerHTML = toCodeOutput(date);
-  readableOutput.innerHTML = toReadableOutput(date);
-  isoOutput.innerHTML = toISOOutput(date);
-  mongoOutput.innerHTML = toMongoOutput(date);
+  showErrorIfInvalid(date);
+  outputsAndGenerators.forEach((generator, output) => {
+    output.innerHTML = isNaN(date.getTime()) ? "Invalid Date" : generator(date);
+  });
 }
 input.addEventListener('input', setOutputs);
 
+const resetLink = document.getElementById('reset-to-now')
 const reset = () => {
   input.value = dateToValidInput(new Date());
   setOutputs();
 }
 resetLink.addEventListener("click", reset);
 
-// Initialize.
 reset();
