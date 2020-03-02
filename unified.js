@@ -170,7 +170,7 @@ switchToMongoLink.addEventListener('click', () => {
 
 // If redirected from search.html, start with the searched timestamp rather than
 // the current timestamp.
-const queried = window.location.search.substring(1);
+const queried = decodeURIComponent(window.location.search.substring(1));
 if (queried && queried.length > 0) {
   console.log("Initializing with query value", queried)
   if (queried.match(/^\d+$/g)) {
