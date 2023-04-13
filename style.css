@@ -1,5 +1,6 @@
 #main {
   margin-top: 30vh;
+  margin-bottom:30vh;
 }
 
 .quiet {
@@ -16,4 +17,9 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  font-family: monospace;
+}
+
+.spell {
+  color: greenyellow;
 }

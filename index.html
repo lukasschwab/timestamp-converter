@@ -1,5 +1,5 @@
 <head>
-  <title>Timestamp Converter</title>
+  <title>Speller</title>
   <!-- favicon -->
   <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
@@ -16,45 +16,28 @@
 <body>
   <div id="main" class="container">
     <div class="col-lg-8">
-      <h1>timestamp converter</h1>
+      <h1>speller</h1>
       <p class="quiet">
-        <a href="http://lukasschwab.me">Lukas Schwab</a> &middot; <a href="http://github.com/lukasschwab/timestamp-converter">timestamp-converter on GitHub</a>
+        <a href="http://lukasschwab.me">Lukas Schwab</a> &middot; <a href="http://github.com/lukasschwab/speller">speller on GitHub</a>
       </p>
       <div class="input-group mb-3">
-        <div class="input-group-prepend">
+        <!-- TODO: allow selecting between several alphabets? -->
+        <!-- <div class="input-group-prepend">
           <button id="somedropdown" class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Unix Time</button>
           <div class="dropdown-menu">
             <a id="switch-to-unix" class="dropdown-item" href="#">Unix Time</a>
             <a id="switch-to-iso" class="dropdown-item" href="#">ISO 8601</a>
             <a id="switch-to-mongo" class="dropdown-item" href="#">Mongo ID</a>
           </div>
-        </div>
-        <input id="input" class="form-control" type="number" aria-label="Timestamp" aria-describedby="basic-addon1">
+        </div> -->
+        <input id="input" class="form-control" type="text" aria-label="Phrase" aria-describedby="basic-addon1">
       </div>
       <p id="unix-error" class="alert alert-danger" style="display: none;">Timestamp is not valid. <a class="alert-link reset-to-now" href="#">Reset to the current timestamp.</a></p>
       <p id="iso-error" class="alert alert-danger" style="display: none;">ISO time is not valid. <a class="alert-link reset-to-now" href="#">Reset to the current time.</a></p>
       <p id="mongo-error" class="alert alert-danger" style="display: none;">ID does not encode a valid timestamp. <a class="alert-link reset-to-now" href="#">Reset to a Mongo ID encoding the current timetamp.</a></p>
       <p id="warning" class="alert alert-info" style="display: none;">Interpreting as seconds.</p>
       <div id="clickable">
-        <ul class="list-group">
-          <li id="default-output" class="list-group-item list-group-item-action list-group-item-primary" href="#">Loading...</li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">Readable</label>
-            <span id="readable-output"></span>
-          </li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">ISO 8601</label>
-            <span id="iso-output"></span>
-          </li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">JavaScript</label>
-            <code id="code-output"></code>
-          </li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">Mongo ID</label>
-            <code id="mongo-output"></code>
-          </li>
-        </ul>
+        <ul class="list-group" id="results"></ul>
       </div>
     </div>
   </div>
