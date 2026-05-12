@@ -56,8 +56,11 @@
   border-radius: 0.25rem 0.25rem 0 0;
 }
 
-/* Outer table-as-list look: rounded corners + thin border on the table. */
-#clickable .output-table {
+/* Outer table-as-list look: rounded corners + thin border. Putting the
+ * border on the wrapper (rather than on <table border-collapse: collapse>)
+ * avoids the well-known issue where the outer border doesn't render
+ * alongside the radius/overflow clipping. */
+#clickable {
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.25rem;
   overflow: hidden;
