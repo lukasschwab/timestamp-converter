@@ -65,3 +65,7 @@
   border-radius: 0.25rem;
   overflow: hidden;
 }
+
+#relative-row {
+  cursor: pointer;
+}

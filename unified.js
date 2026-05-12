@@ -50,60 +50,61 @@ const toDefaultOutput = (d) => d;
 
 const toCodeOutput = (d) => `new Date(${d.getTime()})`;
 
-// Relative-time output. The coarsest unit where |value| >= 1 is chosen
-// by default; clicking the unit word cycles to finer (then wraps).
-const relativeUnits = [
-  ['year',   365.25 * 24 * 60 * 60 * 1000],
-  ['month',  30.4375 * 24 * 60 * 60 * 1000],
-  ['week',   7 * 24 * 60 * 60 * 1000],
+// Relative-time output. Two modes, toggled by clicking the row:
+//   'compound' — "2 days, 3 hours, 4 minutes, 5 seconds ago"
+//   'seconds'  — "183845 seconds ago"
+var relativeMode = 'compound';
+
+const compoundUnits = [
   ['day',    24 * 60 * 60 * 1000],
   ['hour',   60 * 60 * 1000],
   ['minute', 60 * 1000],
   ['second', 1000],
 ];
-const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
 
-// Index into relativeUnits for the currently displayed precision.
-// null means "auto-pick the coarsest meaningful unit". Stays null until the
-// user explicitly cycles, so changing the input re-picks the coarsest unit.
-var relativeUnitIndex = null;
+const pluralize = (n, unit) => `${n} ${unit}${n === 1 ? '' : 's'}`;
 
-const availableUnitsFor = (deltaMs) => {
-  // Units whose rounded value is non-zero. Falls back to 'second' if all round to 0.
-  const idxs = relativeUnits
-    .map(([, ms], i) => Math.round(deltaMs / ms) !== 0 ? i : -1)
-    .filter(i => i !== -1);
-  return idxs.length ? idxs : [relativeUnits.length - 1];
+const toCompoundString = (deltaMs) => {
+  let remaining = Math.abs(deltaMs);
+  // Round to the nearest second so we don't carry sub-second noise.
+  remaining = Math.round(remaining / 1000) * 1000;
+  if (remaining === 0) return 'now';
+  const parts = [];
+  for (const [unit, ms] of compoundUnits) {
+    const n = Math.floor(remaining / ms);
+    if (n > 0) {
+      parts.push(pluralize(n, unit));
+      remaining -= n * ms;
+    }
+  }
+  const joined = parts.join(', ');
+  return deltaMs < 0 ? `${joined} ago` : `in ${joined}`;
 };
+
+const toSecondsString = (deltaMs) => {
+  const secs = Math.round(deltaMs / 1000);
+  if (secs === 0) return 'now';
+  const n = Math.abs(secs);
+  const phrase = pluralize(n, 'second');
+  return secs < 0 ? `${phrase} ago` : `in ${phrase}`;
+};
+
+const relativeRow = document.getElementById('relative-row');
 
 const toReadableOutput = (d) => {
   const deltaMs = d.getTime() - Date.now();
-  const available = availableUnitsFor(deltaMs);
-  // Pick coarsest available if the user hasn't chosen, or if their choice
-  // isn't meaningful for this delta. Don't mutate relativeUnitIndex itself —
-  // we want a later, larger delta to re-pick the coarsest unit.
-  const idx = (relativeUnitIndex !== null && available.includes(relativeUnitIndex))
-    ? relativeUnitIndex
-    : available[0];
-  const [unit, unitMs] = relativeUnits[idx];
-  const value = Math.round(deltaMs / unitMs);
-  const formatted = rtf.format(value, unit);
-  // Make the unit word (or 'now') clickable for cycling precision.
-  const re = new RegExp('\\b(' + unit + 's?|now)\\b');
-  return formatted.replace(re, '<span class="relative-unit" role="button" tabindex="0">$1</span>');
+  // Highlight: gray for past, sunny yellow for future. Cleared if the row is
+  // marked invalid (we still emit a string in that case, but the date is NaN
+  // upstream and the whole output is replaced with 'Invalid Date').
+  relativeRow.classList.remove('list-group-item-secondary', 'list-group-item-warning');
+  if (!isNaN(d.getTime())) {
+    relativeRow.classList.add(deltaMs >= 0 ? 'list-group-item-warning' : 'list-group-item-secondary');
+  }
+  return relativeMode === 'seconds' ? toSecondsString(deltaMs) : toCompoundString(deltaMs);
 };
 
-const cycleRelativeUnit = () => {
-  const date = inputParser(input.value);
-  if (isNaN(date.getTime())) return;
-  const deltaMs = date.getTime() - Date.now();
-  const available = availableUnitsFor(deltaMs);
-  // If user hasn't cycled yet, current display is available[0]; advance from there.
-  const current = (relativeUnitIndex !== null && available.includes(relativeUnitIndex))
-    ? relativeUnitIndex
-    : available[0];
-  const pos = available.indexOf(current);
-  relativeUnitIndex = available[(pos + 1) % available.length];
+const toggleRelativeMode = () => {
+  relativeMode = relativeMode === 'compound' ? 'seconds' : 'compound';
   setOutputs();
 };
 
@@ -150,17 +151,13 @@ const setOutputs = () => {
 
 input.addEventListener('input', setOutputs);
 
-// Clicking the unit word in the relative-time output cycles precision.
-document.getElementById('relative-output').addEventListener('click', (e) => {
-  if (e.target.classList && e.target.classList.contains('relative-unit')) {
-    e.stopPropagation();
-    cycleRelativeUnit();
-  }
+// Clicking anywhere on the relative-time row toggles compound ↔ seconds.
+relativeRow.addEventListener('click', (e) => {
+  e.stopPropagation();
+  toggleRelativeMode();
 });
 
 const reset = () => {
-  // Re-pick coarsest unit on reset (typically a mode switch or error recovery).
-  relativeUnitIndex = null;
   input.value = dateToValidInput(new Date());
   setOutputs();
 }
