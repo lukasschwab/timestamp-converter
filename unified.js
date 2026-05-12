@@ -80,11 +80,13 @@ const toCompoundString = (deltaMs) => {
 };
 
 const toSecondsString = (deltaMs) => {
-  // Signed seconds with a truncated unit, e.g. "-1000 s" or "+42 s".
-  // Negative = in the past, positive = in the future.
-  const secs = Math.round(deltaMs / 1000);
-  const sign = secs > 0 ? '+' : '';
-  return `${sign}${secs} s`;
+  // Signed seconds with a truncated unit, e.g. "-1000.250 s" or "+42 s".
+  // Negative = in the past, positive = in the future. Up to 3 decimal
+  // places; trailing zeros (and the decimal point) are trimmed.
+  const secs = deltaMs / 1000;
+  let str = secs.toFixed(3).replace(/\.?0+$/, '');
+  if (secs > 0) str = '+' + str;
+  return `${str} s`;
 };
 
 const relativeRow = document.getElementById('relative-row');
