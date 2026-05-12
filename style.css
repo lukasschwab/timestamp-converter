@@ -80,3 +80,7 @@
   cursor: pointer;
   border-bottom: 1px dotted currentColor;
 }
+
+#relative-row td:last-child {
+  text-align: right;
+}
