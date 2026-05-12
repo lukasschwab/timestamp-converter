@@ -23,6 +23,13 @@ const mongoParser = (s) => {
   return new Date(ms);
 }
 
+const uuidv7Parser = (s) => {
+  // Strip dashes; first 12 hex digits encode unix ms timestamp.
+  const hex = s.replace(/-/g, "");
+  const ms = parseInt(hex.substring(0, 12), 16);
+  return new Date(ms);
+}
+
 const isoParser = (s) => new Date(s);
 
 var error;
@@ -60,12 +67,22 @@ const toMongoOutput = (d) => {
   return prefix + "0000000000000000";
 }
 
+const toUUIDv7Output = (d) => {
+  // Emit the lexicographically-minimum well-formed UUIDv7 for this ms, so
+  // the value works as a sentinel for range queries on a UUIDv7 ID column
+  // (e.g. `WHERE id >= <uuid>` selects records at or after this timestamp).
+  // 48-bit ms timestamp, version nibble 7, variant bits 10xx, rest zero.
+  const tsHex = d.getTime().toString(16).padStart(12, "0");
+  return `${tsHex.substring(0, 8)}-${tsHex.substring(8, 12)}-7000-8000-000000000000`;
+}
+
 const outputsAndGenerators = new Map([
   [document.getElementById('default-output'), toDefaultOutput],
   [document.getElementById('code-output'), toCodeOutput],
   [document.getElementById('readable-output'), toReadableOutput],
   [document.getElementById('iso-output'), toISOOutput],
   [document.getElementById('mongo-output'), toMongoOutput],
+  [document.getElementById('uuidv7-output'), toUUIDv7Output],
 ]);
 
 /**
@@ -110,6 +127,9 @@ const isoError = document.getElementById("iso-error");
 const switchToMongoLink = document.getElementById("switch-to-mongo");
 const mongoError = document.getElementById("mongo-error");
 
+const switchToUUIDv7Link = document.getElementById("switch-to-uuidv7");
+const uuidv7Error = document.getElementById("uuidv7-error");
+
 // (String | Number) => Date
 var inputParser;
 // (Date) => String | Number
@@ -124,6 +144,7 @@ function switchToUnix() {
   switchToUnixLink.classList.add("active");
   switchToISOLink.classList.remove("active");
   switchToMongoLink.classList.remove("active");
+  switchToUUIDv7Link.classList.remove("active");
   error = unixError;
 }
 
@@ -140,6 +161,7 @@ function switchToISO() {
   switchToISOLink.classList.add("active");
   switchToUnixLink.classList.remove("active");
   switchToMongoLink.classList.remove("active");
+  switchToUUIDv7Link.classList.remove("active");
   error = isoError;
 }
 
@@ -156,11 +178,29 @@ function switchToMongo() {
   switchToMongoLink.classList.add("active");
   switchToUnixLink.classList.remove("active");
   switchToISOLink.classList.remove("active");
+  switchToUUIDv7Link.classList.remove("active");
   error = mongoError;
 }
 
 switchToMongoLink.addEventListener('click', () => {
   switchToMongo();
+  reset();
+});
+
+function switchToUUIDv7() {
+  dropdown.innerText = "UUIDv7";
+  input.type = "text"
+  inputParser = uuidv7Parser;
+  dateToValidInput = toUUIDv7Output;
+  switchToUUIDv7Link.classList.add("active");
+  switchToUnixLink.classList.remove("active");
+  switchToISOLink.classList.remove("active");
+  switchToMongoLink.classList.remove("active");
+  error = uuidv7Error;
+}
+
+switchToUUIDv7Link.addEventListener('click', () => {
+  switchToUUIDv7();
   reset();
 });
 
@@ -179,6 +219,9 @@ if (queried && queried.length > 0) {
   } else if (!isNaN((new Date(queried)).getTime())) {
     console.log("Switching on query to ISO");
     switchToISO();
+  } else if (/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(queried)) {
+    console.log("Switching on query to UUIDv7");
+    switchToUUIDv7();
   } else {
     console.log("Defaulting on query to Mongo");
     switchToMongo();
