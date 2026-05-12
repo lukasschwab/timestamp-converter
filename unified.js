@@ -80,11 +80,11 @@ const toCompoundString = (deltaMs) => {
 };
 
 const toSecondsString = (deltaMs) => {
+  // Signed seconds with a truncated unit, e.g. "-1000 s" or "+42 s".
+  // Negative = in the past, positive = in the future.
   const secs = Math.round(deltaMs / 1000);
-  if (secs === 0) return 'now';
-  const n = Math.abs(secs);
-  const phrase = pluralize(n, 'second');
-  return secs < 0 ? `${phrase} ago` : `in ${phrase}`;
+  const sign = secs > 0 ? '+' : '';
+  return `${sign}${secs} s`;
 };
 
 const relativeRow = document.getElementById('relative-row');
