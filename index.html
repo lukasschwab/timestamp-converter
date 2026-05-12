@@ -27,6 +27,7 @@
             <a id="switch-to-unix" class="dropdown-item" href="#">Unix Time</a>
             <a id="switch-to-iso" class="dropdown-item" href="#">ISO 8601</a>
             <a id="switch-to-mongo" class="dropdown-item" href="#">Mongo ID</a>
+            <a id="switch-to-uuidv7" class="dropdown-item" href="#">UUIDv7</a>
           </div>
         </div>
         <input id="input" class="form-control" type="number" aria-label="Timestamp" aria-describedby="basic-addon1">
@@ -34,27 +35,36 @@
       <p id="unix-error" class="alert alert-danger" style="display: none;">Timestamp is not valid. <a class="alert-link reset-to-now" href="#">Reset to the current timestamp.</a></p>
       <p id="iso-error" class="alert alert-danger" style="display: none;">ISO time is not valid. <a class="alert-link reset-to-now" href="#">Reset to the current time.</a></p>
       <p id="mongo-error" class="alert alert-danger" style="display: none;">ID does not encode a valid timestamp. <a class="alert-link reset-to-now" href="#">Reset to a Mongo ID encoding the current timetamp.</a></p>
+      <p id="uuidv7-error" class="alert alert-danger" style="display: none;">UUID does not encode a valid timestamp. <a class="alert-link reset-to-now" href="#">Reset to a UUIDv7 encoding the current timestamp.</a></p>
       <p id="warning" class="alert alert-info" style="display: none;">Interpreting as seconds.</p>
       <div id="clickable">
-        <ul class="list-group">
-          <li id="default-output" class="list-group-item list-group-item-action list-group-item-primary" href="#">Loading...</li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">Readable</label>
-            <span id="readable-output"></span>
-          </li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">ISO 8601</label>
-            <span id="iso-output"></span>
-          </li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">JavaScript</label>
-            <code id="code-output"></code>
-          </li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">Mongo ID</label>
-            <code id="mongo-output"></code>
-          </li>
-        </ul>
+        <table class="output-table">
+          <tbody>
+            <tr id="default-row">
+              <td id="default-output" colspan="2">Loading...</td>
+            </tr>
+            <tr>
+              <th scope="row" class="quiet">Readable</th>
+              <td><span id="readable-output"></span></td>
+            </tr>
+            <tr>
+              <th scope="row" class="quiet">ISO 8601</th>
+              <td><span id="iso-output"></span></td>
+            </tr>
+            <tr>
+              <th scope="row" class="quiet">JavaScript</th>
+              <td><code id="code-output"></code></td>
+            </tr>
+            <tr>
+              <th scope="row" class="quiet">UUIDv7</th>
+              <td><code id="uuidv7-output"></code></td>
+            </tr>
+            <tr>
+              <th scope="row" class="quiet">Mongo ID</th>
+              <td><code id="mongo-output"></code></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
