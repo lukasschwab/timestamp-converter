@@ -5,6 +5,7 @@ Some simple timestamp utilities.
 + Unix timestamps (milliseconds and seconds)
 + ISO 8601 timestamps
 + Mongo ID timestamps
++ UUIDv7 timestamps
 
 ## Search
 

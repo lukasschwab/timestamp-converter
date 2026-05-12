@@ -113,12 +113,19 @@ const toMongoOutput = (d) => {
 }
 
 const toUUIDv7Output = (d) => {
-  // Emit the lexicographically-minimum well-formed UUIDv7 for this ms, so
-  // the value works as a sentinel for range queries on a UUIDv7 ID column
-  // (e.g. `WHERE id >= <uuid>` selects records at or after this timestamp).
-  // 48-bit ms timestamp, version nibble 7, variant bits 10xx, rest zero.
+  // Emit a UUIDv7-shaped sentinel for this ms, suitable as a lower-bound
+  // for range queries on a UUIDv7 ID column (e.g. `WHERE id >= <sentinel>`
+  // selects records at or after this timestamp).
+  //
+  // The 48-bit ms timestamp occupies the leading 12 hex digits; the
+  // version nibble is 7; everything after that is zero. This isn't a
+  // valid UUIDv7 (the RFC 9562 variant nibble should be 10xx, i.e. 8-b)
+  // but that's the point: real UUIDv7s for this ms all sort STRICTLY
+  // ABOVE the sentinel (variant >= 8), and real UUIDv7s for ms-1 sort
+  // strictly below it (different timestamp prefix). So the sentinel is
+  // an exact lower bound for the ms with no false matches.
   const tsHex = d.getTime().toString(16).padStart(12, "0");
-  return `${tsHex.substring(0, 8)}-${tsHex.substring(8, 12)}-7000-8000-000000000000`;
+  return `${tsHex.substring(0, 8)}-${tsHex.substring(8, 12)}-7000-0000-000000000000`;
 }
 
 const outputsAndGenerators = new Map([
