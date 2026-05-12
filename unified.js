@@ -50,14 +50,59 @@ const toDefaultOutput = (d) => d;
 
 const toCodeOutput = (d) => `new Date(${d.getTime()})`;
 
-const toReadableOutput = (d) => d.toLocaleDateString(
-  'en-US',
-  {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
+// Relative-time output. Two cells side by side:
+//   compound — "2 days, 3 hours, 4 minutes, 5 seconds ago"
+//   seconds  — "183845 seconds ago"
+const compoundUnits = [
+  ['day',    24 * 60 * 60 * 1000],
+  ['hour',   60 * 60 * 1000],
+  ['minute', 60 * 1000],
+  ['second', 1000],
+];
+
+const pluralize = (n, unit) => `${n} ${unit}${n === 1 ? '' : 's'}`;
+
+const toCompoundString = (deltaMs) => {
+  let remaining = Math.abs(deltaMs);
+  // Round to the nearest second so we don't carry sub-second noise.
+  remaining = Math.round(remaining / 1000) * 1000;
+  if (remaining === 0) return 'now';
+  const parts = [];
+  for (const [unit, ms] of compoundUnits) {
+    const n = Math.floor(remaining / ms);
+    if (n > 0) {
+      parts.push(pluralize(n, unit));
+      remaining -= n * ms;
+    }
   }
-);
+  const joined = parts.join(', ');
+  return deltaMs < 0 ? `${joined} ago` : `in ${joined}`;
+};
+
+const toSecondsString = (deltaMs) => {
+  // Signed seconds with a truncated unit, e.g. "-1000.250 s" or "+42 s".
+  // Negative = in the past, positive = in the future. Up to 3 decimal
+  // places; trailing zeros (and the decimal point) are trimmed.
+  const secs = deltaMs / 1000;
+  let str = secs.toFixed(3).replace(/\.?0+$/, '');
+  if (secs > 0) str = '+' + str;
+  return `${str} s`;
+};
+
+const relativeRow = document.getElementById('relative-row');
+
+const toCompoundOutput = (d) => {
+  const deltaMs = d.getTime() - Date.now();
+  const secs = Math.round(deltaMs / 1000);
+  // Highlight row: gray for past, sunny yellow for future, neutral at 'now'.
+  relativeRow.classList.remove('list-group-item-secondary', 'list-group-item-warning');
+  if (!isNaN(d.getTime()) && secs !== 0) {
+    relativeRow.classList.add(secs > 0 ? 'list-group-item-warning' : 'list-group-item-secondary');
+  }
+  return toCompoundString(deltaMs);
+};
+
+const toSecondsOutput = (d) => toSecondsString(d.getTime() - Date.now());
 
 const toISOOutput = (d) => d.toISOString();
 
@@ -79,7 +124,8 @@ const toUUIDv7Output = (d) => {
 const outputsAndGenerators = new Map([
   [document.getElementById('default-output'), toDefaultOutput],
   [document.getElementById('code-output'), toCodeOutput],
-  [document.getElementById('readable-output'), toReadableOutput],
+  [document.getElementById('relative-compound-output'), toCompoundOutput],
+  [document.getElementById('relative-seconds-output'), toSecondsOutput],
   [document.getElementById('iso-output'), toISOOutput],
   [document.getElementById('mongo-output'), toMongoOutput],
   [document.getElementById('uuidv7-output'), toUUIDv7Output],
@@ -101,6 +147,13 @@ const setOutputs = () => {
 }
 
 input.addEventListener('input', setOutputs);
+
+// Clicking the 'Relative' label refreshes the row against the current
+// wall-clock time (the rest of the outputs depend on the input value).
+document.getElementById('relative-refresh').addEventListener('click', (e) => {
+  e.stopPropagation();
+  setOutputs();
+});
 
 const reset = () => {
   input.value = dateToValidInput(new Date());

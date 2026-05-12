@@ -65,3 +65,28 @@
   border-radius: 0.25rem;
   overflow: hidden;
 }
+
+/* Lighter grey for past timestamps than Bootstrap's default secondary. */
+#relative-row.list-group-item-secondary {
+  background-color: #eef0f1;
+  color: #6c757d;
+}
+#relative-row.list-group-item-secondary:hover,
+#relative-row.list-group-item-secondary:focus {
+  background-color: #e3e6e8;
+}
+
+#relative-refresh {
+  cursor: pointer;
+  border-bottom: 1px dotted currentColor;
+}
+
+#relative-row td:last-child {
+  text-align: right;
+}
+
+/* Tabular numerals so updating values don't shift horizontally. */
+.output-table,
+#input {
+  font-variant-numeric: tabular-nums;
+}
