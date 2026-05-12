@@ -50,11 +50,9 @@ const toDefaultOutput = (d) => d;
 
 const toCodeOutput = (d) => `new Date(${d.getTime()})`;
 
-// Relative-time output. Two modes, toggled by clicking the row:
-//   'compound' — "2 days, 3 hours, 4 minutes, 5 seconds ago"
-//   'seconds'  — "183845 seconds ago"
-var relativeMode = 'compound';
-
+// Relative-time output. Two cells side by side:
+//   compound — "2 days, 3 hours, 4 minutes, 5 seconds ago"
+//   seconds  — "183845 seconds ago"
 const compoundUnits = [
   ['day',    24 * 60 * 60 * 1000],
   ['hour',   60 * 60 * 1000],
@@ -91,22 +89,17 @@ const toSecondsString = (deltaMs) => {
 
 const relativeRow = document.getElementById('relative-row');
 
-const toReadableOutput = (d) => {
+const toCompoundOutput = (d) => {
   const deltaMs = d.getTime() - Date.now();
-  // Highlight: gray for past, sunny yellow for future. Cleared if the row is
-  // marked invalid (we still emit a string in that case, but the date is NaN
-  // upstream and the whole output is replaced with 'Invalid Date').
+  // Highlight row: gray for past, sunny yellow for future.
   relativeRow.classList.remove('list-group-item-secondary', 'list-group-item-warning');
   if (!isNaN(d.getTime())) {
     relativeRow.classList.add(deltaMs >= 0 ? 'list-group-item-warning' : 'list-group-item-secondary');
   }
-  return relativeMode === 'seconds' ? toSecondsString(deltaMs) : toCompoundString(deltaMs);
+  return toCompoundString(deltaMs);
 };
 
-const toggleRelativeMode = () => {
-  relativeMode = relativeMode === 'compound' ? 'seconds' : 'compound';
-  setOutputs();
-};
+const toSecondsOutput = (d) => toSecondsString(d.getTime() - Date.now());
 
 const toISOOutput = (d) => d.toISOString();
 
@@ -128,7 +121,8 @@ const toUUIDv7Output = (d) => {
 const outputsAndGenerators = new Map([
   [document.getElementById('default-output'), toDefaultOutput],
   [document.getElementById('code-output'), toCodeOutput],
-  [document.getElementById('relative-output'), toReadableOutput],
+  [document.getElementById('relative-compound-output'), toCompoundOutput],
+  [document.getElementById('relative-seconds-output'), toSecondsOutput],
   [document.getElementById('iso-output'), toISOOutput],
   [document.getElementById('mongo-output'), toMongoOutput],
   [document.getElementById('uuidv7-output'), toUUIDv7Output],
@@ -151,10 +145,11 @@ const setOutputs = () => {
 
 input.addEventListener('input', setOutputs);
 
-// Clicking anywhere on the relative-time row toggles compound ↔ seconds.
-relativeRow.addEventListener('click', (e) => {
+// Clicking the 'Relative' label refreshes the row against the current
+// wall-clock time (the rest of the outputs depend on the input value).
+document.getElementById('relative-refresh').addEventListener('click', (e) => {
   e.stopPropagation();
-  toggleRelativeMode();
+  setOutputs();
 });
 
 const reset = () => {
