@@ -50,14 +50,62 @@ const toDefaultOutput = (d) => d;
 
 const toCodeOutput = (d) => `new Date(${d.getTime()})`;
 
-const toReadableOutput = (d) => d.toLocaleDateString(
-  'en-US',
-  {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  }
-);
+// Relative-time output. The coarsest unit where |value| >= 1 is chosen
+// by default; clicking the unit word cycles to finer (then wraps).
+const relativeUnits = [
+  ['year',   365.25 * 24 * 60 * 60 * 1000],
+  ['month',  30.4375 * 24 * 60 * 60 * 1000],
+  ['week',   7 * 24 * 60 * 60 * 1000],
+  ['day',    24 * 60 * 60 * 1000],
+  ['hour',   60 * 60 * 1000],
+  ['minute', 60 * 1000],
+  ['second', 1000],
+];
+const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+// Index into relativeUnits for the currently displayed precision.
+// null means "auto-pick the coarsest meaningful unit". Stays null until the
+// user explicitly cycles, so changing the input re-picks the coarsest unit.
+var relativeUnitIndex = null;
+
+const availableUnitsFor = (deltaMs) => {
+  // Units whose rounded value is non-zero. Falls back to 'second' if all round to 0.
+  const idxs = relativeUnits
+    .map(([, ms], i) => Math.round(deltaMs / ms) !== 0 ? i : -1)
+    .filter(i => i !== -1);
+  return idxs.length ? idxs : [relativeUnits.length - 1];
+};
+
+const toReadableOutput = (d) => {
+  const deltaMs = d.getTime() - Date.now();
+  const available = availableUnitsFor(deltaMs);
+  // Pick coarsest available if the user hasn't chosen, or if their choice
+  // isn't meaningful for this delta. Don't mutate relativeUnitIndex itself —
+  // we want a later, larger delta to re-pick the coarsest unit.
+  const idx = (relativeUnitIndex !== null && available.includes(relativeUnitIndex))
+    ? relativeUnitIndex
+    : available[0];
+  const [unit, unitMs] = relativeUnits[idx];
+  const value = Math.round(deltaMs / unitMs);
+  const formatted = rtf.format(value, unit);
+  // Make the unit word (or 'now') clickable for cycling precision.
+  const re = new RegExp('\\b(' + unit + 's?|now)\\b');
+  return formatted.replace(re, '<span class="relative-unit" role="button" tabindex="0">$1</span>');
+};
+
+const cycleRelativeUnit = () => {
+  const date = inputParser(input.value);
+  if (isNaN(date.getTime())) return;
+  const deltaMs = date.getTime() - Date.now();
+  const available = availableUnitsFor(deltaMs);
+  // If user hasn't cycled yet, current display is available[0]; advance from there.
+  const current = (relativeUnitIndex !== null && available.includes(relativeUnitIndex))
+    ? relativeUnitIndex
+    : available[0];
+  const pos = available.indexOf(current);
+  relativeUnitIndex = available[(pos + 1) % available.length];
+  setOutputs();
+};
 
 const toISOOutput = (d) => d.toISOString();
 
@@ -79,7 +127,7 @@ const toUUIDv7Output = (d) => {
 const outputsAndGenerators = new Map([
   [document.getElementById('default-output'), toDefaultOutput],
   [document.getElementById('code-output'), toCodeOutput],
-  [document.getElementById('readable-output'), toReadableOutput],
+  [document.getElementById('relative-output'), toReadableOutput],
   [document.getElementById('iso-output'), toISOOutput],
   [document.getElementById('mongo-output'), toMongoOutput],
   [document.getElementById('uuidv7-output'), toUUIDv7Output],
@@ -102,7 +150,17 @@ const setOutputs = () => {
 
 input.addEventListener('input', setOutputs);
 
+// Clicking the unit word in the relative-time output cycles precision.
+document.getElementById('relative-output').addEventListener('click', (e) => {
+  if (e.target.classList && e.target.classList.contains('relative-unit')) {
+    e.stopPropagation();
+    cycleRelativeUnit();
+  }
+});
+
 const reset = () => {
+  // Re-pick coarsest unit on reset (typically a mode switch or error recovery).
+  relativeUnitIndex = null;
   input.value = dateToValidInput(new Date());
   setOutputs();
 }
