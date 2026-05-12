@@ -91,10 +91,11 @@ const relativeRow = document.getElementById('relative-row');
 
 const toCompoundOutput = (d) => {
   const deltaMs = d.getTime() - Date.now();
-  // Highlight row: gray for past, sunny yellow for future.
+  const secs = Math.round(deltaMs / 1000);
+  // Highlight row: gray for past, sunny yellow for future, neutral at 'now'.
   relativeRow.classList.remove('list-group-item-secondary', 'list-group-item-warning');
-  if (!isNaN(d.getTime())) {
-    relativeRow.classList.add(deltaMs >= 0 ? 'list-group-item-warning' : 'list-group-item-secondary');
+  if (!isNaN(d.getTime()) && secs !== 0) {
+    relativeRow.classList.add(secs > 0 ? 'list-group-item-warning' : 'list-group-item-secondary');
   }
   return toCompoundString(deltaMs);
 };
