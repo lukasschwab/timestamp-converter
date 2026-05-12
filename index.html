@@ -38,29 +38,33 @@
       <p id="uuidv7-error" class="alert alert-danger" style="display: none;">UUID does not encode a valid timestamp. <a class="alert-link reset-to-now" href="#">Reset to a UUIDv7 encoding the current timestamp.</a></p>
       <p id="warning" class="alert alert-info" style="display: none;">Interpreting as seconds.</p>
       <div id="clickable">
-        <ul class="list-group">
-          <li id="default-output" class="list-group-item list-group-item-action list-group-item-primary" href="#">Loading...</li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">Readable</label>
-            <span id="readable-output"></span>
-          </li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">ISO 8601</label>
-            <span id="iso-output"></span>
-          </li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">JavaScript</label>
-            <code id="code-output"></code>
-          </li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">Mongo ID</label>
-            <code id="mongo-output"></code>
-          </li>
-          <li class="list-group-item list-group-item-action" href="#">
-            <label class="list-group-item-label quiet">UUIDv7</label>
-            <code id="uuidv7-output"></code>
-          </li>
-        </ul>
+        <table class="output-table">
+          <tbody>
+            <tr id="default-row">
+              <td id="default-output" colspan="2">Loading...</td>
+            </tr>
+            <tr>
+              <th scope="row" class="quiet">Readable</th>
+              <td><span id="readable-output"></span></td>
+            </tr>
+            <tr>
+              <th scope="row" class="quiet">ISO 8601</th>
+              <td><span id="iso-output"></span></td>
+            </tr>
+            <tr>
+              <th scope="row" class="quiet">JavaScript</th>
+              <td><code id="code-output"></code></td>
+            </tr>
+            <tr>
+              <th scope="row" class="quiet">UUIDv7</th>
+              <td><code id="uuidv7-output"></code></td>
+            </tr>
+            <tr>
+              <th scope="row" class="quiet">Mongo ID</th>
+              <td><code id="mongo-output"></code></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

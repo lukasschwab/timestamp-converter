@@ -6,16 +6,51 @@
   color: #95a5a6;
 }
 
-.list-group-item-label {
-  display: inline-block;
-  min-width: 6em;
-  margin-right: 20px;
-  margin-bottom: 0;
-  /* Unselectable */
+/* Output table. Two columns: a label header on the left and the value on
+ * the right. The browser sizes both columns to their content, which gives
+ * us the alignment we want without any hard-coded widths. */
+.output-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.output-table th,
+.output-table td {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
+  text-align: left;
+  vertical-align: baseline;
+  font-weight: normal;
+}
+.output-table tr:first-child th,
+.output-table tr:first-child td {
+  border-top: 0;
+}
+.output-table th {
+  /* Auto-size label column to widest label. */
+  width: 1%;
+  white-space: nowrap;
+  /* Labels are not selectable. */
   -webkit-touch-callout: none;
   -webkit-user-select: none;
-  -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.output-table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* The primary (first) row mirrors Bootstrap's list-group-item-primary look. */
+#default-row td {
+  background-color: #b8daff;
+  color: #004085;
+  border-top: 0;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+
+/* Outer table-as-list look: rounded corners + thin border on the table. */
+#clickable .output-table {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.25rem;
+  overflow: hidden;
 }
