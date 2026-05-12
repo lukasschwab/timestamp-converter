@@ -21,6 +21,14 @@
   vertical-align: baseline;
   font-weight: normal;
 }
+/* Halve the inter-column gap by tightening the label's right padding
+ * and the value's left padding. Outer padding (table edges) is unchanged. */
+.output-table th {
+  padding-right: 0.625rem;
+}
+.output-table td:not(:first-child) {
+  padding-left: 0.625rem;
+}
 .output-table tr:first-child th,
 .output-table tr:first-child td {
   border-top: 0;
