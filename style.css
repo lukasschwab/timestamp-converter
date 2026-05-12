@@ -69,3 +69,13 @@
 #relative-row {
   cursor: pointer;
 }
+
+/* Lighter grey for past timestamps than Bootstrap's default secondary. */
+#relative-row.list-group-item-secondary {
+  background-color: #eef0f1;
+  color: #6c757d;
+}
+#relative-row.list-group-item-secondary:hover,
+#relative-row.list-group-item-secondary:focus {
+  background-color: #e3e6e8;
+}
