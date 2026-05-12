@@ -84,3 +84,9 @@
 #relative-row td:last-child {
   text-align: right;
 }
+
+/* Tabular numerals so updating values don't shift horizontally. */
+.output-table,
+#input {
+  font-variant-numeric: tabular-nums;
+}
